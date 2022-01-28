@@ -1,0 +1,84 @@
+version: "3.7"
+
+services:
+  python:
+    container_name: ${PROJECT_NAME}-python
+    build:
+      dockerfile: _conf/python.Dockerfile
+      context: .
+      args:
+        - PYTHON_VERSION=${PYTHON_VERSION}
+        - USER_ID=${DEV_ENV_UID}
+        - GROUP_ID=${DEV_ENV_GID}
+        - USER_NAME=${USER_NAME}
+    restart: unless-stopped
+    image: vekalchat-back:dev
+    volumes:
+      - ./:/home/${USER_NAME}/app
+      - pip_cache_data:/home/${USER_NAME}/.cache:z
+      - pipenv_data:/home/${USER_NAME}/.local/share/virtualenvs/app_packages:z
+    ports:
+      - "${SERVER_LOCAL_ACCESS_PORT}:${SERVER_PORT}"
+    networks:
+      - web
+    depends_on:
+      - postgres
+      - redis
+      # Uncomment with webpack service 
+      #- webpack
+
+  postgres:
+    container_name: ${PROJECT_NAME}-postgres
+    restart: unless-stopped
+    image: postgres:11-alpine
+    command: [ "-c", "shared_buffers=1GB" ]
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - psql_data:/var/lib/postgresql/data:z
+    ports:
+      - "${DB_LOCAL_ACCESS_PORT}:${DB_PORT}"
+    networks:
+      - web
+
+  redis:
+    container_name: ${PROJECT_NAME}-redis
+    restart: unless-stopped
+    image: redis:5.0-alpine
+    networks:
+      - web
+  
+  # Uncomment it when you need SSR front implementation
+  #
+  #webpack:
+  #  container_name: ${PROJECT_NAME}-redis
+  #  build:
+  #    context: .
+  #    dockerfile: _conf/node.Dockerfile
+  #  image: tobegoo-webpack:dev
+  #  volumes:
+  #    - ./webpack.config.js:/app/webpack.config.js:ro
+  #    - ./templates:/app/templates:ro
+  #    - ./static:/app/static:rw
+  #  command: npm start
+
+
+# Uncomment replace it with web network when project have to
+# communicate with other projects on container level
+#
+#networks: 
+#  default: 
+#    external: 
+#      name: # a extranl network name
+
+networks:
+  web:
+
+volumes:
+  pipenv_data:
+  pip_cache_data:
+  psql_data: 
+  # Uncomment if you are using vscode for development
+  #vscode_data:

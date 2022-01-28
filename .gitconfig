@@ -1,0 +1,5 @@
+[user]
+	email = abkprogramming@gmail.com
+	name = Amirhosein Bidar
+[credential]
+	helper = "!f() { /home/pyuser/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node /tmp/vscode-remote-containers-dee5164ebd705b956ff13e056270d4e11c8e4f03.js $*; }; f"

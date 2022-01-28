@@ -1,0 +1,41 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "*"
+flake8 = "*"
+coverage = "*"
+factory-boy = "*"
+mypy = "*"
+isort = {extras = ["pipfile_deprecated_finder", "requirements_deprecated_finder"], version = "*"}
+djangorestframework-stubs = "*"
+darglint = "*"
+types-requests = "*"
+django-stubs-ext = "*"
+types-python-dateutil = "*"
+django-stubs = "==1.8"
+
+
+[packages]
+django = "==3"
+djangorestframework = "==3.11"
+django-cors-headers = "*"
+drf-yasg = "*"
+pillow = "*"
+psycopg2-binary = "*"
+environs = "*"
+django-redis = "*"
+djangorestframework-simplejwt = "*"
+django-filter = "*"
+django-celery-results = "*"
+django-post-office = "*"
+google-auth = "*"
+google-auth-oauthlib = "*"
+
+[requires]
+python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
