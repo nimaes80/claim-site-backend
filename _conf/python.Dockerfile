@@ -34,6 +34,7 @@ RUN apk upgrade --update && \
     jpeg-dev \
     zlib-dev \
     openssl-dev \
+    openssh \
     libressl-dev \
     libffi-dev \
     git \

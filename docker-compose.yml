@@ -12,7 +12,7 @@ services:
         - GROUP_ID=${DEV_ENV_GID}
         - USER_NAME=${USER_NAME}
     restart: unless-stopped
-    image: vekalchat-back:dev
+    image: python-back:dev
     volumes:
       - ./:/home/${USER_NAME}/app
       - pip_cache_data:/home/${USER_NAME}/.cache:z
