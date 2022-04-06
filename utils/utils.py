@@ -28,8 +28,8 @@ def phone_maker():
     return '09' + f'{random.randint(100000000, 999999999)}'
 
 
-def gs(**kwargs):
-    return type(token_hex(10), (serializers.Serializer,), kwargs)
+def gs(serializer_name=None, **kwargs):
+    return type(serializer_name or token_hex(10), (serializers.Serializer,), kwargs)
 
 
 def multi_method_decorator(decorator, methods: list):
