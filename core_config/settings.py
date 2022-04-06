@@ -103,7 +103,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=env.int("ACCESS_TOKEN_LIFETIME", 1)),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("REFRESH_TOKEN_LIFETIME", 5)),
-    "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_HEADER_TYPES": ("Bearer", "jwt"),
 }
 CACHE_TTL = 90
@@ -164,7 +163,7 @@ STATICFILES_FINDERS = (
 REST_FRAMEWORK = dict(
     DEFAULT_PERMISSION_CLASSES=("rest_framework.permissions.IsAuthenticated",),
     DEFAULT_AUTHENTICATION_CLASSES=(
-        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     UNAUTHENTICATED_USER=None,
     DEFAULT_RENDERER_CLASSES=("rest_framework.renderers.JSONRenderer",),
