@@ -1,7 +1,7 @@
 import requests
 from rest_framework import serializers
 
-from account.models import User
+from account.models import SystemSetting, User
 from core_config import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.settings import api_settings
@@ -110,7 +110,11 @@ class AdminTokenObtainPairSerializer(serializers.Serializer):
         username = attrs.pop("username")
         password = attrs.pop("password")
         self.user = User.objects.filter(username=username).first()
-        if not self.user or not self.user.check_password(password) or not self.user.is_staff:
+        if (
+            not self.user
+            or not self.user.check_password(password)
+            or not self.user.is_staff
+        ):
             raise serializers.ValidationError("Incorrect credentials")
 
         refresh = RefreshToken.for_user(self.user)
@@ -136,3 +140,9 @@ class UserSerializer(serializers.ModelSerializer):
             "referral",
             "subset_point",
         ]
+
+
+class SystemSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemSetting
+        fields = "__all__"

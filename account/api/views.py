@@ -11,6 +11,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from account.api.serializers import (
     AdminTokenObtainPairSerializer,
     CustomTokenObtainPairSerializer,
+    SystemSettingSerializer,
     UserSerializer,
 )
 from account.models import SystemSetting
@@ -95,4 +96,17 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @action(methods=["GET"], detail=False)
     def my_profile(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.request.user)
+        return Response(serializer.data)
+
+
+class SystemSettingViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = SystemSettingSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def list(self, request, *args, **kwargs):
+        serializer = self.get_serializer(SystemSetting.get_solo())
         return Response(serializer.data)

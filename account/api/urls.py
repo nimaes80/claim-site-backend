@@ -11,4 +11,5 @@ urlpatterns = [
 ]
 
 router.register("user", views.UserViewSet, "user")
+router.register("system_setting", views.SystemSettingViewSet, "system_setting")
 urlpatterns += router.urls
