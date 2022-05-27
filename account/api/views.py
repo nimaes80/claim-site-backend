@@ -8,7 +8,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from account.api.serializers import CustomTokenObtainPairSerializer, UserSerializer
+from account.api.serializers import (
+    AdminTokenObtainPairSerializer,
+    CustomTokenObtainPairSerializer,
+    UserSerializer,
+)
 from account.models import SystemSetting
 from utils.permissions import IsAdmin
 from utils.utils import gs
@@ -22,6 +26,22 @@ class DecoratedTokenObtainPairView(TokenObtainPairView):
         responses={
             status.HTTP_200_OK: gs(
                 serializer_name="TokenObtainPairResponseSerializer",
+                access=serializers.CharField(),
+                refresh=serializers.CharField(),
+            )
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class AdminDecoratedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = AdminTokenObtainPairSerializer
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: gs(
+                serializer_name="AdminTokenObtainPairResponseSerializer",
                 access=serializers.CharField(),
                 refresh=serializers.CharField(),
             )

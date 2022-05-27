@@ -75,6 +75,55 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
         return attrs
 
 
+class AdminTokenObtainPairSerializer(serializers.Serializer):
+    refresh = serializers.CharField(read_only=True)
+    access = serializers.CharField(read_only=True)
+    username = serializers.CharField()
+    password = serializers.CharField()
+    if settings.CAPTCHA_TYPE == "recaptcha":
+        captcha_token = serializers.CharField(write_only=True)
+
+    def check_recaptcha(self, attrs):
+        captcha_token = attrs.get("captcha_token")
+
+        # https://developers.google.com/recaptcha/docs/verify#api_request
+        data = requests.post(
+            settings.CAPTCHA_URL,
+            data={
+                "secret": settings.CAPTCHA_SECRET,
+                "response": captcha_token,
+            },
+        ).json()
+
+        if not data.get("success"):
+            raise serializers.ValidationError(
+                f"Captcha is not valid, captcha service's response is `{data.get('error-codes')}`",
+                "invalid_recaptcha",
+            )
+
+    def validate(self, attrs):
+        # recaptcha service only work in production server so for
+        # development we have to disable it
+        if settings.CAPTCHA_TYPE == "recaptcha":
+            self.check_recaptcha(attrs)
+
+        username = attrs.pop("username")
+        password = attrs.pop("password")
+        self.user = User.objects.filter(username=username).first()
+        if not self.user or not self.user.check_password(password) or not self.user.is_staff:
+            raise serializers.ValidationError("Incorrect credentials")
+
+        refresh = RefreshToken.for_user(self.user)
+
+        attrs["refresh"] = str(refresh)
+        attrs["access"] = str(refresh.access_token)
+
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, self.user)
+
+        return attrs
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

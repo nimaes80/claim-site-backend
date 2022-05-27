@@ -5,6 +5,7 @@ from rest_framework.routers import SimpleRouter
 router = SimpleRouter()
 
 urlpatterns = [
+    path("login/admin/", views.AdminDecoratedTokenObtainPairView.as_view()),
     path("login/", views.DecoratedTokenObtainPairView.as_view()),
     path("refresh/", views.DecoratedTokenRefreshView.as_view()),
 ]
