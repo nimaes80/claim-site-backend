@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 black = "*"
 flake8 = "*"
-coverage = "*"
 factory-boy = "*"
 mypy = "*"
 isort = {extras = ["pipfile_deprecated_finder", "requirements_deprecated_finder"], version = "*"}
@@ -16,7 +15,6 @@ types-requests = "*"
 django-stubs-ext = "*"
 types-python-dateutil = "*"
 django-stubs = "==1.8"
-
 
 [packages]
 django = "==3"
@@ -33,9 +31,10 @@ django-celery-results = "*"
 django-post-office = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
+django-solo = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true

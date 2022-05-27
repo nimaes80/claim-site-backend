@@ -4,11 +4,13 @@ from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-
+from account.api.urls import urlpatterns as account_urls
 from core_config import settings
 
 
-api_patterns = []
+api_patterns = [
+    path("account/", include(account_urls)),
+]
 
 urlpatterns = (
     [

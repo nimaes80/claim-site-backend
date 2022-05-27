@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-
+from marshmallow.validate import OneOf
 from environs import Env
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_celery_results",
     "django_filters",
+    "solo",
     "account.apps.AccountConfig",
 ]
 
@@ -205,6 +206,7 @@ SWAGGER_SETTINGS = dict(
     ),
 )
 
+
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "mail.hackerbiz.com"
 EMAIL_HOST_USER = env("EMAIL_HOST_USER", 1)
@@ -219,3 +221,17 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = True
+
+# captcha setting
+# https://developers.google.com/recaptcha/docs/verify
+CAPTCHA_TYPE = env.str(
+    "CAPTCHA_TYPE",
+    validate=OneOf(
+        ["recaptcha", "none"],
+        error="CAPTCHA_TYPE must be one of: {choices}",
+    ),
+)
+RECAPTCHA_SECRET = ""
+if CAPTCHA_TYPE == "recaptcha":
+    RECAPTCHA_SECRET = env("RECAPTCHA_SECRET")
+RECAPTCHA_URL = "https://www.google.com/recaptcha/api/siteverify"

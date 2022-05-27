@@ -81,4 +81,4 @@ volumes:
   pip_cache_data:
   psql_data: 
   # Uncomment if you are using vscode for development
-  #vscode_data:
+  vscode_data:
