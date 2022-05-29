@@ -1,7 +1,7 @@
 import requests
 from rest_framework import serializers
 
-from account.models import SystemSetting, User
+from account.models import FAQ, ContactUs, SystemSetting, User
 from core_config import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.settings import api_settings
@@ -139,6 +139,7 @@ class UserSerializer(serializers.ModelSerializer):
             "claim_point",
             "referral",
             "subset_point",
+            "withdraw",
         ]
 
 
@@ -146,3 +147,19 @@ class SystemSettingSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemSetting
         fields = "__all__"
+
+
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = "__all__"
+
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs
+        fields = "__all__"
+
+
+class WithdrawSerializer(serializers.Serializer):
+    amount = serializers.FloatField()

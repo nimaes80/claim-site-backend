@@ -6,18 +6,20 @@ from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from account.api.serializers import (
     AdminTokenObtainPairSerializer,
     CustomTokenObtainPairSerializer,
+    FAQSerializer,
     SystemSettingSerializer,
     UserSerializer,
+    WithdrawSerializer,
 )
-from account.models import SystemSetting
+from account.models import FAQ, ContactUs, SystemSetting, User
 from utils.permissions import IsAdmin
 from utils.utils import gs
-from rest_framework.response import Response
 
 
 class DecoratedTokenObtainPairView(TokenObtainPairView):
@@ -66,9 +68,13 @@ class DecoratedTokenRefreshView(TokenRefreshView):
 
 
 class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = User.objects.all()
+
     def get_serializer_class(self):
         if self.action == "claim":
             return None
+        if self.action == "withdraw":
+            return WithdrawSerializer
         return UserSerializer
 
     def get_permissions(self):
@@ -98,6 +104,19 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(self.request.user)
         return Response(serializer.data)
 
+    @action(methods=["POST"], detail=False)
+    def withdraw(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        amount = serializer.data["amount"]
+        user = self.request.user
+        balance = user.claim_point + user.subset_point
+        if balance - (amount + user.withdraw) < 0:
+            raise ValidationError("User does not have enough balance")
+        user.withdraw += amount
+        user.save()
+        return Response("ok")
+
 
 class SystemSettingViewSet(
     mixins.ListModelMixin,
@@ -110,3 +129,39 @@ class SystemSettingViewSet(
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(SystemSetting.get_solo())
         return Response(serializer.data)
+
+
+class FAQViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = FAQSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+    queryset = FAQ.objects.all().order_by("id")
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, IsAdmin]
+        if self.action == "list":
+            self.permission_classes = [IsAuthenticated]
+
+        return super().get_permissions()
+
+
+class ContactUsViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = ContactUs
+    queryset = ContactUs.objects.all().order_by("id")
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated]
+        if self.action in ["list", "destroy"]:
+            self.permission_classes = [IsAuthenticated, IsAdmin]
+
+        return super().get_permissions()
