@@ -50,3 +50,7 @@ class GlobalInfo(models.Model):
     value = models.CharField(max_length=255)
 
 
+class Socials(models.Model):
+    name = models.CharField(max_length=255)
+    url = models.URLField()
+    icon = models.TextField()
