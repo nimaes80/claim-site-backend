@@ -84,6 +84,7 @@ with env.prefixed("DB_") as e:
             PASSWORD=e("PASS"),
             HOST=e("HOST"),
             PORT=e("PORT"),
+            CONN_MAX_AGE=20,
         )
     }
 

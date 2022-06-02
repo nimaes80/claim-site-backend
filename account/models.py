@@ -33,11 +33,20 @@ class SystemSetting(SingletonModel):
 
 
 class FAQ(models.Model):
-    text = models.CharField(max_length=255)
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
 
 
 class ContactUs(models.Model):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
-    text = models.CharField(max_length=255)
+    text = models.TextField()
+
+
+
+class GlobalInfo(models.Model):
+    title = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+

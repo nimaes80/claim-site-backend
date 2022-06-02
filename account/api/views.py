@@ -5,7 +5,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -16,6 +16,7 @@ from account.api.serializers import (
     SystemSettingSerializer,
     UserSerializer,
     WithdrawSerializer,
+    GlobalInfoSerializer,
 )
 from account.models import FAQ, ContactUs, SystemSetting, User
 from utils.permissions import IsAdmin
@@ -95,7 +96,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         user.claim_point += system_setting.claim_point
         if user.referral:
             user.referral.subset_point = system_setting.subset_point
-        user.claim_datetime = now + timedelta(seconds=system_setting.claim_period)
+        user.claim_datetime = now + timedelta(seconds=system_setting.claim_period*60)
         user.save()
         return Response("ok")
 
@@ -124,11 +125,16 @@ class SystemSettingViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = SystemSettingSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
 
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(SystemSetting.get_solo())
         return Response(serializer.data)
+
+
+    def get_permissions(self):
+        self.permission_classes = [IsAuthenticated, IsAdmin]
+        
+        return super().get_permissions()
 
 
 class FAQViewSet(
@@ -145,7 +151,7 @@ class FAQViewSet(
     def get_permissions(self):
         self.permission_classes = [IsAuthenticated, IsAdmin]
         if self.action == "list":
-            self.permission_classes = [IsAuthenticated]
+            self.permission_classes = []
 
         return super().get_permissions()
 
@@ -165,3 +171,26 @@ class ContactUsViewSet(
             self.permission_classes = [IsAuthenticated, IsAdmin]
 
         return super().get_permissions()
+
+
+
+
+class GlobalInfoViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = GlobalInfoSerializer
+
+    def get_permissions(self):
+        if self.action != 'list':
+            permissions = (IsAuthenticated, IsAdmin)
+        else:
+            permissions = ()
+        
+        return (Permission() for Permission in permissions)
+
+
+
