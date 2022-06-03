@@ -120,7 +120,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class SystemSettingViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = SystemSettingSerializer
@@ -128,6 +127,15 @@ class SystemSettingViewSet(
 
     def list(self, request, *args, **kwargs):
         serializer = self.get_serializer(SystemSetting.get_solo())
+        return Response(serializer.data)
+
+    @action(methods=["PATCH"], detail=False)
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            SystemSetting.get_solo(), data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
         return Response(serializer.data)
 
 
@@ -165,3 +173,24 @@ class ContactUsViewSet(
             self.permission_classes = [IsAuthenticated, IsAdmin]
 
         return super().get_permissions()
+
+
+class SystemSettingViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    serializer_class = SystemSettingSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def list(self, request, *args, **kwargs):
+        serializer = self.get_serializer(SystemSetting.get_solo())
+        return Response(serializer.data)
+
+    @action(methods=["PATCH"], detail=False)
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            SystemSetting.get_solo(), data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)

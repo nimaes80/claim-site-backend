@@ -29,11 +29,15 @@ class SystemSetting(SingletonModel):
     claim_point = models.FloatField(default=1)
     subset_point = models.FloatField(default=1)
     claim_period = models.IntegerField(default=600)
+
+
+class PublicInfo(SingletonModel):
     about_us = models.TextField(null=True, blank=True)
 
 
 class FAQ(models.Model):
-    text = models.CharField(max_length=255)
+    question = models.CharField(max_length=255)
+    answer = models.CharField(max_length=255)
 
 
 class ContactUs(models.Model):

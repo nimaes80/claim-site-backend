@@ -1,7 +1,7 @@
 import requests
 from rest_framework import serializers
 
-from account.models import FAQ, ContactUs, SystemSetting, User
+from account.models import FAQ, ContactUs, PublicInfo, SystemSetting, User
 from core_config import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.settings import api_settings
@@ -163,3 +163,9 @@ class ContactUsSerializer(serializers.ModelSerializer):
 
 class WithdrawSerializer(serializers.Serializer):
     amount = serializers.FloatField()
+
+
+class PublicInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PublicInfo
+        fields = "__all__"
