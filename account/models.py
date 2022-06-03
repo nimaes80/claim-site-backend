@@ -45,5 +45,5 @@ class ContactUs(models.Model):
 
 
 class GlobalInfo(SingletonModel):
-    socials = ArrayField(JSONField(default=dict), default=list)
-    extra = JSONField(default=dict)
+    socials = ArrayField(JSONField(default=dict), default=list, null=True, blank=True)
+    extra = JSONField(default=dict, null=True, blank=True)

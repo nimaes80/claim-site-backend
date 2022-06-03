@@ -183,12 +183,10 @@ class GlobalInfoViewSet(
     serializer_class = GlobalInfoSerializer
 
     def get_permissions(self):
-        self.permissions = [IsAuthenticated, IsAdmin]
-
-        if self.action == "list":
-            self.permissions = []
-
-        return super().get_permissions()
+        permisations = (IsAuthenticated, IsAdmin,)
+        if self.action == 'list' or self.request.method == 'GET':
+            permisations = ()
+        return [Permisation() for Permisation in permisations]
 
     @action(methods=["GET"], detail=False)
     def get_info(self, request, *args, **kwargs):
