@@ -45,7 +45,5 @@ class ContactUs(models.Model):
 
 
 class GlobalInfo(SingletonModel):
-    title = models.CharField(max_length=255, null=True, blank=True)
-    value = models.CharField(max_length=255, null=True, blank=True)
     socials = ArrayField(JSONField(default=dict), default=list)
     extra = JSONField(default=dict)
