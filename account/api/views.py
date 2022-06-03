@@ -170,7 +170,7 @@ class ContactUsViewSet(
     queryset = ContactUs.objects.all().order_by("id")
 
     def get_permissions(self):
-        self.permission_classes = [IsAuthenticated]
+        self.permission_classes = []
         if self.action in ["list", "destroy"]:
             self.permission_classes = [IsAuthenticated, IsAdmin]
 
