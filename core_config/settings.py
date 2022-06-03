@@ -84,6 +84,7 @@ with env.prefixed("DB_") as e:
             PASSWORD=e("PASS"),
             HOST=e("HOST"),
             PORT=e("PORT"),
+            CONN_MAX_AGE=20,
         )
     }
 
@@ -144,7 +145,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Tehran"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/

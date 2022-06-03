@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 from solo.models import SingletonModel
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 
 class User(AbstractUser):
@@ -26,22 +27,25 @@ class User(AbstractUser):
 
 
 class SystemSetting(SingletonModel):
-    claim_point = models.FloatField(default=1)
-    subset_point = models.FloatField(default=1)
-    claim_period = models.IntegerField(default=600)
-
-
-class PublicInfo(SingletonModel):
-    about_us = models.TextField(null=True, blank=True)
+    claim_point = models.FloatField(default=1, blank=True)
+    subset_point = models.FloatField(default=1, blank=True)
+    claim_period = models.IntegerField(default=600, blank=True)
 
 
 class FAQ(models.Model):
     question = models.CharField(max_length=255)
-    answer = models.CharField(max_length=255)
+    answer = models.TextField()
 
 
 class ContactUs(models.Model):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
-    text = models.CharField(max_length=255)
+    text = models.TextField()
+
+
+class GlobalInfo(SingletonModel):
+    title = models.CharField(max_length=255, null=True, blank=True)
+    value = models.CharField(max_length=255, null=True, blank=True)
+    socials = ArrayField(JSONField(default=dict), default=list)
+    extra = JSONField(default=dict)

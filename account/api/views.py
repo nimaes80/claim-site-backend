@@ -16,8 +16,9 @@ from account.api.serializers import (
     SystemSettingSerializer,
     UserSerializer,
     WithdrawSerializer,
+    GlobalInfoSerializer,
 )
-from account.models import FAQ, ContactUs, SystemSetting, User
+from account.models import FAQ, ContactUs, GlobalInfo, SystemSetting, User
 from utils.permissions import IsAdmin
 from utils.utils import gs
 
@@ -95,7 +96,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         user.claim_point += system_setting.claim_point
         if user.referral:
             user.referral.subset_point = system_setting.subset_point
-        user.claim_datetime = now + timedelta(seconds=system_setting.claim_period)
+        user.claim_datetime = now + timedelta(seconds=system_setting.claim_period * 60)
         user.save()
         return Response("ok")
 
@@ -119,23 +120,23 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class SystemSettingViewSet(
-    mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = SystemSettingSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
 
-    def list(self, request, *args, **kwargs):
+    @action(methods=["GET"], detail=False)
+    def get_setting(self, request, *args, **kwargs):
         serializer = self.get_serializer(SystemSetting.get_solo())
         return Response(serializer.data)
 
     @action(methods=["PATCH"], detail=False)
-    def update(self, request, *args, **kwargs):
+    def update_setting(self, request, *args, **kwargs):
         serializer = self.get_serializer(
             SystemSetting.get_solo(), data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        serializer.save()
         return Response(serializer.data)
 
 
@@ -153,7 +154,7 @@ class FAQViewSet(
     def get_permissions(self):
         self.permission_classes = [IsAuthenticated, IsAdmin]
         if self.action == "list":
-            self.permission_classes = [IsAuthenticated]
+            self.permission_classes = []
 
         return super().get_permissions()
 
@@ -175,22 +176,29 @@ class ContactUsViewSet(
         return super().get_permissions()
 
 
-class SystemSettingViewSet(
-    mixins.ListModelMixin,
+class GlobalInfoViewSet(
     viewsets.GenericViewSet,
 ):
-    serializer_class = SystemSettingSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]
+    serializer_class = GlobalInfoSerializer
 
-    def list(self, request, *args, **kwargs):
-        serializer = self.get_serializer(SystemSetting.get_solo())
+    def get_permissions(self):
+        self.permissions = [IsAuthenticated, IsAdmin]
+
+        if self.action == "list":
+            self.permissions = []
+
+        return super().get_permissions()
+
+    @action(methods=["GET"], detail=False)
+    def get_info(self, request, *args, **kwargs):
+        serializer = self.get_serializer(GlobalInfo.get_solo())
         return Response(serializer.data)
 
     @action(methods=["PATCH"], detail=False)
-    def update(self, request, *args, **kwargs):
+    def update_info(self, request, *args, **kwargs):
         serializer = self.get_serializer(
-            SystemSetting.get_solo(), data=request.data, partial=True
+            GlobalInfo.get_solo(), data=request.data, partial=True
         )
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+        serializer.save()
         return Response(serializer.data)

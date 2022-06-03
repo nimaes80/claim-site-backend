@@ -14,5 +14,7 @@ router.register("user", views.UserViewSet, "user")
 router.register("system_setting", views.SystemSettingViewSet, "system_setting")
 router.register("contact us", views.ContactUsViewSet, "contact us")
 router.register("faq", views.FAQViewSet, "faq")
+router.register("global_info", views.GlobalInfoViewSet, "gi")
+
 
 urlpatterns += router.urls
