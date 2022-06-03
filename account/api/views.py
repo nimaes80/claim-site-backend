@@ -121,7 +121,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class SystemSettingViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
     serializer_class = SystemSettingSerializer
@@ -135,6 +134,24 @@ class SystemSettingViewSet(
         self.permission_classes = [IsAuthenticated, IsAdmin]
         
         return super().get_permissions()
+
+
+    @action(methods=['PUT', 'PATCH'], detail=False)
+    def updater(self, request, *args, **kwargs):
+        setting = SystemSetting.objects.get()
+        if request.data['claim_point']:
+            setting.claim_point = float(request.data['claim_point'])
+        if request.data['subset_point']:
+            setting.claim_point = float(request.data['subset_point'])
+        if request.data['claim_period']:
+            setting.claim_point = int(request.data['claim_period'])
+        if request.data['about_us']:
+            setting.claim_point = request.data['about_us']
+        setting.save()
+        return Response('OK', 200)
+        
+        
+
 
 
 class FAQViewSet(
