@@ -17,6 +17,7 @@ from account.api.serializers import (
     UserSerializer,
     WithdrawSerializer,
     GlobalInfoSerializer,
+    ContactUsSerializer,
 )
 from account.models import FAQ, ContactUs, GlobalInfo, SystemSetting, User
 from utils.permissions import IsAdmin
@@ -165,7 +166,7 @@ class ContactUsViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    serializer_class = ContactUs
+    serializer_class = ContactUsSerializer
     queryset = ContactUs.objects.all().order_by("id")
 
     def get_permissions(self):
