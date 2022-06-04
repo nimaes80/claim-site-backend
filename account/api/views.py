@@ -126,9 +126,11 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         user_id = request.data['user_id']
         if user_id:
             user = get_object_or_404(User, id=user_id)
-            user.last_withdraw = 0
-            user.save()
-            return Response('OK')
+            if user.last_withdraw > 0:
+                user.last_withdraw = 0
+                user.save()
+                return Response('OK')
+            return Response('User dont want to pay',status=200)
         return Response('User ID is not provided', status=400)
 
 

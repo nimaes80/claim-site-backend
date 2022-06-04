@@ -132,6 +132,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "uuid",
             "wallet_address",
             "telegram_id",
