@@ -114,7 +114,8 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         balance = user.claim_point + user.subset_point
         if balance - (amount + user.withdraw) < 0:
             raise ValidationError("User does not have enough balance")
-        user.withdraw += amount
+        user.total_withdraw += amount
+        user.last_withdraw = amount
         user.save()
         return Response("ok")
 

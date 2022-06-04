@@ -20,7 +20,8 @@ class User(AbstractUser):
         "self", null=True, blank=True, related_name="subset", on_delete=models.SET_NULL
     )
     subset_point = models.FloatField(default=0)
-    withdraw = models.FloatField(default=0)
+    total_withdraw = models.FloatField(default=0)
+    last_withdraw = models.FloatField(default=0)
 
     def __str__(self):
         return str(self.id)

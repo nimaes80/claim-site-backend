@@ -139,7 +139,8 @@ class UserSerializer(serializers.ModelSerializer):
             "claim_point",
             "referral",
             "subset_point",
-            "withdraw",
+            "total_withdraw",
+            "last_withdraw",
         ]
 
 
