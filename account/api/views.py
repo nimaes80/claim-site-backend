@@ -17,6 +17,7 @@ from account.api.serializers import (
     UserSerializer,
     WithdrawSerializer,
     GlobalInfoSerializer,
+    ContactUsSerializer,
 )
 from account.models import FAQ, ContactUs, GlobalInfo, SystemSetting, User
 from utils.permissions import IsAdmin
@@ -166,11 +167,11 @@ class ContactUsViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    serializer_class = ContactUs
+    serializer_class = ContactUsSerializer
     queryset = ContactUs.objects.all().order_by("id")
 
     def get_permissions(self):
-        self.permission_classes = [IsAuthenticated]
+        self.permission_classes = []
         if self.action in ["list", "destroy"]:
             self.permission_classes = [IsAuthenticated, IsAdmin]
 
@@ -183,11 +184,9 @@ class GlobalInfoViewSet(
     serializer_class = GlobalInfoSerializer
 
     def get_permissions(self):
-        self.permissions = [IsAuthenticated, IsAdmin]
-
-        if self.action == "list":
-            self.permissions = []
-
+        self.permission_classes = (IsAuthenticated, IsAdmin)
+        if self.action == "get_info":
+            self.action = ()
         return super().get_permissions()
 
     @action(methods=["GET"], detail=False)
