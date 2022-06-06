@@ -32,6 +32,7 @@ django-post-office = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
 django-solo = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
