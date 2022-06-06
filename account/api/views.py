@@ -8,7 +8,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from django.shortcuts import get_object_or_404
 from account.api.serializers import (
     AdminTokenObtainPairSerializer,
     CustomTokenObtainPairSerializer,
@@ -121,6 +121,19 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Response("ok")
 
 
+    @action(methods=['POST'], detail=False)
+    def pay(self, request, *args, **kwargs):
+        user_id = request.data['user_id']
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+            if user.last_withdraw > 0:
+                user.last_withdraw = 0
+                user.save()
+                return Response('OK')
+            return Response('User dont want to pay',status=200)
+        return Response('User ID is not provided', status=400)
+
+
 class SystemSettingViewSet(
     viewsets.GenericViewSet,
 ):
@@ -186,7 +199,7 @@ class GlobalInfoViewSet(
     def get_permissions(self):
         self.permission_classes = (IsAuthenticated, IsAdmin)
         if self.action == "get_info":
-            self.action = ()
+            self.permission_classes = ()
         return super().get_permissions()
 
     @action(methods=["GET"], detail=False)
