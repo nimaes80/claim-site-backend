@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 from solo.models import SingletonModel
 from django.contrib.postgres.fields import ArrayField, JSONField
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
@@ -29,7 +30,9 @@ class User(AbstractUser):
 
 class SystemSetting(SingletonModel):
     claim_point = models.FloatField(default=1, blank=True)
-    subset_point = models.FloatField(default=1, blank=True)
+    subset_point = models.FloatField(
+        default=1, blank=True, validators=[MaxValueValidator(100), MinValueValidator(0)]
+    )
     claim_period = models.IntegerField(default=600, blank=True)
 
 

@@ -94,9 +94,16 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise ValidationError("Claim time does not arrived")
 
         system_setting = SystemSetting.get_solo()
-        user.claim_point += system_setting.claim_point
+        subset_point = system_setting.subset_point
+        claim_point = system_setting.claim_point
+
         if user.referral:
-            user.referral.subset_point = system_setting.subset_point
+            user.claim_point += claim_point - (subset_point * claim_point / 100)
+            user.referral.subset_point += subset_point * claim_point / 100
+        else:
+            user.claim_point += claim_point
+
+        user.claim_point += system_setting.claim_point
         user.claim_datetime = now + timedelta(seconds=system_setting.claim_period * 60)
         user.save()
         return Response("ok")
@@ -113,9 +120,8 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         amount = serializer.data["amount"]
         user = self.request.user
         balance = user.claim_point + user.subset_point
-        if balance - (amount + user.withdraw) < 0:
+        if balance - (amount + user.total_withdraw) < 0:
             raise ValidationError("User does not have enough balance")
-        user.total_withdraw += amount
         user.last_withdraw = amount
         user.save()
         return Response("ok")
@@ -127,6 +133,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             user = get_object_or_404(User, id=user_id)
             if user.last_withdraw > 0:
                 user.last_withdraw = 0
+                user.total_withdraw += user.last_withdraw
                 user.save()
                 return Response("OK")
             return Response("User don't want to pay", status=200)
