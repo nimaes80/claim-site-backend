@@ -114,16 +114,13 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(self.request.user)
         return Response(serializer.data)
 
+
     @action(methods=["POST"], detail=False)
     def withdraw(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        amount = serializer.data["amount"]
-        user = self.request.user
-        balance = user.claim_point + user.subset_point
-        if balance - (amount + user.total_withdraw) < 0:
-            raise ValidationError("User does not have enough balance")
-        user.last_withdraw = amount
+        user = request.user
+        withdraw = (user.claim_point + user.subset_point) - user.total_withdraw
+        user.last_withdraw = withdraw
+        user.total_withdraw += withdraw
         user.save()
         return Response("ok")
 
@@ -134,7 +131,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             user = get_object_or_404(User, id=user_id)
             if user.last_withdraw > 0:
                 user.last_withdraw = 0
-                user.total_withdraw += user.last_withdraw
                 user.save()
                 return Response("OK")
             return Response("User don't want to pay", status=200)
