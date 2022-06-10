@@ -201,7 +201,7 @@ class GlobalInfoViewSet(
 
     def get_permissions(self):
         self.permission_classes = (IsAuthenticated, IsAdmin)
-        if self.request.method == "GET":
+        if self.request.method == "GET" or self.action == 'get_info' or self.view.name == 'get_info':
             self.permission_classes = ()
         return super().get_permissions()
 
