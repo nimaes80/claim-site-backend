@@ -119,10 +119,12 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def withdraw(self, request, *args, **kwargs):
         user = request.user
         withdraw = (user.claim_point + user.subset_point) - user.total_withdraw
-        user.last_withdraw = withdraw
-        user.total_withdraw += withdraw
-        user.save()
-        return Response("ok")
+        if withdraw >= 20:
+            user.last_withdraw = withdraw
+            user.total_withdraw += withdraw
+            user.save()
+            return Response("ok")
+        return Response(status=400)
 
     @action(methods=["POST"], detail=False)
     def pay(self, request, *args, **kwargs):
