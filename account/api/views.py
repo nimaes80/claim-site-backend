@@ -104,7 +104,6 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         else:
             user.claim_point += claim_point
 
-        user.claim_point += system_setting.claim_point
         user.claim_datetime = now + timedelta(seconds=system_setting.claim_period * 60)
         user.save()
         return Response("ok")
