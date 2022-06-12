@@ -95,14 +95,12 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise ValidationError("Claim time does not arrived")
 
         system_setting = SystemSetting.get_solo()
-        subset_point = system_setting.subset_point
         claim_point = system_setting.claim_point
 
+        user.claim_point += claim_point
         if user.referral:
-            user.claim_point += claim_point - (subset_point * claim_point / 100)
+            subset_point = system_setting.subset_point
             user.referral.subset_point += subset_point * claim_point / 100
-        else:
-            user.claim_point += claim_point
 
         user.claim_datetime = now + timedelta(seconds=system_setting.claim_period * 60)
         user.save()
