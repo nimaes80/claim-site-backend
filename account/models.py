@@ -13,8 +13,8 @@ class User(AbstractUser):
     email = models.EmailField(null=True, blank=True)
 
     uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
-    wallet_address = models.CharField(max_length=255, null=True, blank=True)
-    telegram_id = models.CharField(max_length=255, null=True, blank=True)
+    wallet_address = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    telegram_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     claim_datetime = models.DateTimeField(default=timezone.now, null=True, blank=True)
     claim_point = models.FloatField(default=0)
     referral = models.ForeignKey(
