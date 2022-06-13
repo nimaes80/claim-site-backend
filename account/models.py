@@ -10,7 +10,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=True, blank=True, null=True)
-    email = models.EmailField(null=True, blank=True)
+    email = models.EmailField(null=True, blank=True, unique=True)
 
     uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
     wallet_address = models.CharField(max_length=255, null=True, blank=True, unique=True)
