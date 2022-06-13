@@ -82,10 +82,16 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_permissions(self):
         self.permission_classes = [IsAuthenticated]
-        if self.action == "list":
+        if self.action == "list" or self.action == "ref_count":
             self.permission_classes.append(IsAdmin)
 
         return super().get_permissions()
+
+
+    @action(methods=["GET"], detail=False)
+    def ref_count(self, request, *args, **kwargs):
+        return Response(User.objects.filter(referral__id=request.user.id).count())
+
 
     @action(methods=["POST"], detail=False)
     def claim(self, request, *args, **kwargs):
