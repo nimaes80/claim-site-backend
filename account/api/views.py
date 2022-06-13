@@ -89,7 +89,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     @action(methods=["GET"], detail=False)
     def user_count(self, request, *args, **kwargs):
-        return Response({count:User.objects.all().count()}, status=200)
+        return Response({count:User.objects.count()}, status=200)
 
 
 
