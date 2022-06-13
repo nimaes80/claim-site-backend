@@ -100,7 +100,10 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         user.claim_point += claim_point
         if user.referral:
             subset_point = system_setting.subset_point
-            user.referral.subset_point += subset_point * claim_point / 100
+            ref = user.referral.id
+            user_ref = User.objects.get(id=ref)
+            user_ref.subset_point += subset_point * claim_point / 100
+            user_ref.save()
 
         user.claim_datetime = now + timedelta(seconds=system_setting.claim_period * 60)
         user.save()
