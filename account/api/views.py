@@ -95,7 +95,7 @@ class UserViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     @action(methods=["GET"], detail=False)
     def ref_count(self, request, *args, **kwargs):
-        return Response({count_ref:User.objects.filter(referral__id=request.user.id).count()})
+        return Response({count_ref:User.objects.filter(referral__id=request.user.id).count()}, stauts=200)
 
 
     @action(methods=["POST"], detail=False)
